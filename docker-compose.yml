@@ -179,7 +179,7 @@ services:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile
       - client-web-react:/srv/react:ro
       # Task 2B — uncomment when you want Caddy to serve the Flutter build output.
-      # - client-web-flutter:/srv/flutter:ro
+      - client-web-flutter:/srv/flutter:ro
 
   qwen-code-api:
     build:
@@ -293,6 +293,27 @@ services:
     depends_on:
       - victorialogs
       - victoriatraces
+
+  nanobot:
+    build:
+      context: .
+      dockerfile: nanobot/Dockerfile
+    restart: unless-stopped
+    networks:
+      - lms-network
+    environment:
+      - LMS_API_KEY=set-it-to-something-and-remember-it
+      - LLM_API_KEY=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
+      - LLM_API_BASE_URL=https://openrouter.ai/api/v1
+      - LLM_API_MODEL=openrouter/free
+      - NANOBOT_LMS_BACKEND_URL=http://backend:8000
+      - NANOBOT_GATEWAY_CONTAINER_ADDRESS=0.0.0.0
+      - NANOBOT_GATEWAY_CONTAINER_PORT=8080
+      - NANOBOT_ACCESS_KEY=1234567NANO8
+      - NANOBOT_WORKSPACE=/app/nanobot/workspace
+    depends_on:
+      - backend
+      - qwen-code-api
 
 volumes:
   postgres_data:
